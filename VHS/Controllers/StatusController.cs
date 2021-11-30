@@ -12,11 +12,7 @@ namespace VHSBackend.Web.Controllers
     [ApiController]
     public class StatusController : ControllerBase
     {
-      //  public statuscontroller()
-      //  {
-      //      _statusrepository = new sqlstatusrepository();
-      // }
-
+  
         [HttpPost]
         [Route("status")]
         public ActionResult<bool> PostStatus(VIN vin)

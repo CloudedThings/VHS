@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VHS.Entity\VHS.Entity.csproj" />
+    <ProjectReference Include="..\VHSBackend.Core\VHSBackend.Core.csproj" />
   </ItemGroup>
 
 </Project>

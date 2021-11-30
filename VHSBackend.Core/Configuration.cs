@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using VHSBackend.Core.Configurations;
 
-namespace TrashVacBackEnd.Core
+namespace VHSBackend.Core
 {
     public class Configuration
     {

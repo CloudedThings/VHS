@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VHSBackend.Web", "VHS\VHSBa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VHSBackend.Core", "VHSBackend.Core\VHSBackend.Core.csproj", "{12732D99-C37E-4360-B7BD-35D1536638E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VHS.Entity", "VHS.Entity\VHS.Entity.csproj", "{D337B5A7-7669-4FF5-A76C-92103E5DB53B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VHS.Entity", "VHS.Entity\VHS.Entity.csproj", "{D337B5A7-7669-4FF5-A76C-92103E5DB53B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
