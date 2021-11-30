@@ -13,7 +13,7 @@ namespace VHSBackend.Core.Repository
         protected ADbRepositoryBase()
         {
             _sqlDbAccess =
-                new SqlDbAccess(ServiceProvider.Current.Configuration.ConnectionStrings.TrashVacDbConnectionString);
+                new SqlDbAccess(ServiceProvider.Current.Configuration.ConnectionStrings.VHSDbConnectionString);
         }
 
         protected SqlDbAccess DbAccess

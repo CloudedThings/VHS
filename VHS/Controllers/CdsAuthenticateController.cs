@@ -10,6 +10,8 @@ using VHSBackend.Web.Attributes;
 using VHS.Entity.Cds;
 using VHSBackend.Core;
 using VHS.Entity;
+using Newtonsoft.Json;
+using VHSBackend.Core.Repository;
 
 namespace VHSBackend.Web.Controllers
 {
@@ -17,6 +19,7 @@ namespace VHSBackend.Web.Controllers
     [ApiController]
     public class CdsAuthenticateController : ControllerBase
     {
+        SqlVehicleRepository sqlVehicleRepository = new SqlVehicleRepository();
         public CdsAuthenticateController()
         {
             _cdsClient = new CdsClient();
@@ -43,13 +46,20 @@ namespace VHSBackend.Web.Controllers
         public ActionResult<IList<Vehicle>> GetVIN(string regNo, string authToken)
         {
             var result = _cdsClient.listVins(regNo, authToken);
+
+            foreach (var vehicle in result)
+            {
+                Guid guid = sqlVehicleRepository.CreateVehicle(vehicle);
+                Console.WriteLine(vehicle.Vin);
+                Console.WriteLine(vehicle.owner.FirstName);
+            }
+
             if (result != null)
             {
-            return new OkObjectResult(result);
+                return new OkObjectResult(result);
             }
             return new UnauthorizedResult();
         }
-
 
     }
 }

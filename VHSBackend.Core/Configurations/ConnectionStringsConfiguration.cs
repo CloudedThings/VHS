@@ -14,9 +14,9 @@ namespace VHSBackend.Core.Configurations
         }
 
         private readonly string _root;
-        public string TrashVacDbConnectionString
+        public string VHSDbConnectionString
         {
-            get { return base.GetConfigValue(_root, "TrashVacDbConnectionString"); }
+            get { return base.GetConfigValue(_root, "VHSDb"); }
         }
     }
 }
