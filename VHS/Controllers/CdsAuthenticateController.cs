@@ -49,9 +49,15 @@ namespace VHSBackend.Web.Controllers
 
             foreach (var vehicle in result)
             {
+                // OBS! Special case för Kim och Mattias som är delägarna till en bil...
+                // TODO
+                if (vehicle.Vin == "23826029")
+                {
+                    var rand = new Random();
+                    vehicle.Vin = rand.Next(1000000, 10000000).ToString();
+                }
                 Guid guid = sqlVehicleRepository.CreateVehicle(vehicle);
-                Console.WriteLine(vehicle.Vin);
-                Console.WriteLine(vehicle.owner.FirstName);
+                
             }
 
             if (result != null)

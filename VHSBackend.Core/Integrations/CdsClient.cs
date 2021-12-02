@@ -31,6 +31,20 @@ namespace VHSBackend.Core.Integrations
 
         }
 
+        public Vehicle ownerData(string regNo, string vin, string authToken)
+        {
+            var request = new RestRequest($"/api/cds/v1.0/vehicle/{vin}/{regNo}", Method.GET);
+
+            //request.AddHeader("kyh-auth", authToken);
+            //var response = _restClient.Execute(request);
+            //if (response.IsSuccessful)
+            //{
+            //    return (Vehicle)JsonConvert.DeserializeObject(response.Content);
+            //}
+
+            return Execute<Vehicle> (request, authToken);
+        }
+
         public LoginResponse Login(string userName, string password)
         {
             var request =
