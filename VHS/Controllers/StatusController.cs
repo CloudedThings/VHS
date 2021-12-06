@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace VHSBackend.Web.Controllers
     public class StatusController : ControllerBase
     {
         private readonly SqlVehicleRepository _vehicleRepository;
+        private readonly CdsAuthenticateController _cdsAuthenticateController;
 
         public StatusController()
         {
             _vehicleRepository = new SqlVehicleRepository();
+            _cdsAuthenticateController = new CdsAuthenticateController();
             _cdsClient = new CdsClient();
         }
         private readonly CdsClient _cdsClient;
@@ -131,10 +134,49 @@ namespace VHSBackend.Web.Controllers
             return new NotFoundObjectResult("Not found!");
         }
 
+        // Post endpoint for user/app
         [HttpPost]
         [Route("{vin}/commands")]
         public ActionResult<string> SendCommand(string vin, string userName, string password, string action, bool value)
         {
+
+            var result = _cdsClient.Login(userName, password);
+            
+            if (result != null)
+            {
+                Guid id = result.Id;
+                var response = _cdsClient.ValidateToken(id, result.AccessToken);
+                if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, "das8783nmncxzJJDKnknxz48ZMCCMKJKERK29489u5nknxC"))
+                {
+                    // Här ska vi skicka tutta och blinka till DB
+                    // Vi behöver en metod, stored procedure för det och en tabell
+                    // vi kör antingen if satser eller switch baserad på "action" string
+                    return new OkObjectResult($"Yes you own a car");
+                }
+                return new NotFoundResult();
+
+            }
+            return new NotFoundResult();
+        }
+
+        // Get endpoint for car
+        [HttpGet]
+        [Route("{vin}/commands")]
+        public ActionResult<string> GetCommand(string vin)
+        {
+
+            // här behöver vi en metod där bilen hämtar commando
+
+
+            return new OkObjectResult("OK");
+        }
+        // Post endpoint for car to confirm actions execution
+        [HttpPost]
+        [Route("{vin}/commands/reset")]
+        public ActionResult<string> ResetCommand(string vin, string action, bool value)
+        {
+
+           // metod som resetar alla kommando till 0
 
 
             return new OkObjectResult("OK");

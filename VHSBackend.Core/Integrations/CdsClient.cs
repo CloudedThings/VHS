@@ -49,9 +49,9 @@ namespace VHSBackend.Core.Integrations
         {
             var request =
                 new RestRequest(
-                    $"api/api/cds/v1.0/user/authenticate?userName={HttpUtility.UrlEncode(userName)}&pwd={HttpUtility.UrlEncode(password)}",
+                    $"api/cds/v1.0/user/authenticate?userName={HttpUtility.UrlEncode(userName)}&pwd={HttpUtility.UrlEncode(password)}",
                     Method.GET);
-            return Execute<LoginResponse>(request, " ");
+            return Execute<LoginResponse>(request, "das8783nmncxzJJDKnknxz48ZMCCMKJKERK29489u5nknxC");
         }
 
         public bool ValidateToken(Guid userId, string token)
