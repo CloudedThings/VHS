@@ -13,57 +13,133 @@ namespace VHSBackend.Web.Controllers
     [ApiController]
     public class StatusController : ControllerBase
     {
-        private readonly SqlVehicleRepository _vehicleRepository = new SqlVehicleRepository();
+        private readonly SqlVehicleRepository _vehicleRepository;
 
         public StatusController()
         {
+            _vehicleRepository = new SqlVehicleRepository();
             _cdsClient = new CdsClient();
         }
         private readonly CdsClient _cdsClient;
 
         [HttpPost]
-        [Route("{vin}/status/lock")]
-        public ActionResult<bool> PostLockStatus(string vin, bool lockStatus, string authToken)
+        [Route("{vin}/status/summary")]
+        public ActionResult<bool> UpdateStatus(string vin, bool lockStatus, 
+            int battery, double longitude, double latitude, bool alarm, string tirePressure,
+            double milage, string authToken)
         {
-            if(_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken)) {
-                _vehicleRepository.InsertLockStatusInDB(vin, lockStatus);
-                return new OkObjectResult($"Added!");
+            // No status change can be done on cars without owner
+            if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                _vehicleRepository.UpdateSummaryStatusInDB(vin, lockStatus, battery, longitude, latitude, alarm, tirePressure, milage);
+                return new OkObjectResult($"Status summary changed");
             }
 
-            return new NotFoundObjectResult("No vehicle found!");
-
-
-
-            // var regNo = _vehicleRepository.SearchVehicle(vin);
-            //if (regNo != null)
-            //{
-
-            //} else {
-            //    return new NotFoundObjectResult("Not found!");
-            //}
-            // if (!CheckIfCarExistsInCDS(regNo)) {
-            //    return new NotFoundObjectResult("There's no matching vehicle in CDS!");
-            // } else {
-            //  postNewLockStatusIntoDB(lockStatus);
-            // }
-            //  return OkObjectResult("Lock status updated!");
+            return new NotFoundObjectResult("Vehicle has no owner - summary status cannot be changed!");
         }
 
-        //[HttpPost]
-        //[Route("status")]
-        //public ActionResult<bool> PostStatus(VIN vin)
-        //{
-        //    return new OkObjectResult(vin);
-        //}
+        [HttpPost]
+        [Route("{vin}/status/lock")]
+        public ActionResult<bool> UpdateLockStatus(string vin, bool lockStatus, string authToken)
+        {
+            // No status change can be done on cars without owner
+            if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                _vehicleRepository.UpdateLockStatusInDB(vin, lockStatus);
+                return new OkObjectResult($"Lock status changed");
+            }
+
+            return new NotFoundObjectResult("Vehicle has no owner - lock status cannot be changed!");
+        }
 
 
-        //[HttpPost]
-        //[Route("greet")]
-        //public ActionResult<string> Greet(string text)
-        //{
-        //    return new OkObjectResult($"Hello {text}");
-        //}
+        [HttpPost]
+        [Route("{vin}/status/battery")]
+        public ActionResult<bool> UpdateBatteryStatus(string vin, int batteryLevel, string authToken)
+        {
+            if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                _vehicleRepository.UpdateBatteryStatusInDB(vin, batteryLevel);
+                return new OkObjectResult($"Battery status changed");
+            }
+
+            return new NotFoundObjectResult("Vehicle has no owner - Battery status cannot be changed!");
+        }
+
+        [HttpPost]
+        [Route("{vin}/status/alarm")]
+        public ActionResult<bool> UpdateAlarmStatus(string vin, bool alarm, string authToken)
+        {
+            if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                _vehicleRepository.UpdateAlarmStatusInDB(vin, alarm);
+                return new OkObjectResult($"Battery status changed");
+            }
+
+            return new NotFoundObjectResult("Vehicle has no owner - Battery status cannot be changed!");
+        }
+
+        [HttpPost]
+        [Route("{vin}/status/tirepressure")]
+        public ActionResult<bool> UpdateTirePressureStatus(string vin, string pressure, string authToken)
+        {
+            if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                _vehicleRepository.UpdateTirePressureStatusInDB(vin, pressure);
+                return new OkObjectResult($"Battery status changed");
+            }
+
+            return new NotFoundObjectResult("Vehicle has no owner - Battery status cannot be changed!");
+        }
+
+        [HttpPost]
+        [Route("{vin}/status/milage")]
+        public ActionResult<bool> UpdateMilageStatus(string vin, float milage, string authToken)
+        {
+            if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                _vehicleRepository.UpdateMilageStatusInDB(vin, milage);
+                return new OkObjectResult($"Battery status changed");
+            }
+
+            return new NotFoundObjectResult("Vehicle has no owner - Battery status cannot be changed!");
+        }
+
+        [HttpPost]
+        [Route("{vin}/status/gps")]
+        public ActionResult<bool> UpdateGpsStatus(string vin, double longitude, double latitude, string authToken)
+        {
+            // No status change can be done on cars without owner
+            if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                _vehicleRepository.UpdateGpsStatusInDB(vin, longitude, latitude);
+                return new OkObjectResult($"GPS position changed");
+            }
+
+            return new NotFoundObjectResult("Vehicle has no owner - GPS status cannot be changed!");
+        }
+
+        [HttpGet]
+        [Route("{vin}/status")]
+        public ActionResult<string> GetStatus(string vin)
+        {
+            var result = _vehicleRepository.GetStatus(vin);
+            if (result != null)
+            {
+                return new OkObjectResult(result);
+            }
+            return new NotFoundObjectResult("Not found!");
+        }
+
+        [HttpPost]
+        [Route("{vin}/commands")]
+        public ActionResult<string> SendCommand(string vin, string userName, string password, string action, bool value)
+        {
+
+
+            return new OkObjectResult("OK");
+        }
+
     }
-
 
 }
