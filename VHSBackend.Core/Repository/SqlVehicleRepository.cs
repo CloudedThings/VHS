@@ -65,6 +65,7 @@ namespace VHSBackend.Core.Repository
             parameters.AddFloat("@milage", milage, ParameterDirection.Input);
             DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
         }
+
         public void UpdateAlarmStatusInDB(string vin, bool alarm)
         {
             GetStatus(vin);
@@ -212,6 +213,30 @@ namespace VHSBackend.Core.Repository
 
             return new Guid();
         }
+        public Guid UpdateVinList(Vehicle vehicle)
+        {
+            var parameters = new SqlParameters();
+            parameters.AddNVarChar("@vin", 50, vehicle.Vin);
+            if (vehicle.owner != null && !string.IsNullOrEmpty(vehicle.owner.Id))
+            {
+                parameters.AddNVarChar("@id", vehicle.owner.Id, 50, ParameterDirection.Input);
+                parameters.AddNVarChar("@displayName", vehicle.owner.FirstName, 50, ParameterDirection.Input);
+            }
+            else
+            {
+                parameters.AddNVarChar("@id", null, 50, ParameterDirection.Input);
+                parameters.AddNVarChar("@displayName", null, 50, ParameterDirection.Input);
+            }
+            parameters.AddNVarChar("@regNo", 50, vehicle.Regno);
 
+            DbAccess.ExecuteNonQuery("dbo.sUpdateVehicleList", ref parameters, CommandType.StoredProcedure);
+
+            return new Guid();
+        }
+        public string GetNewRoutesDestination(string vin)
+        {
+            // Get the two floats/doubles from Route Table and return destination as string
+            throw new NotImplementedException();
+        }
     }
 }

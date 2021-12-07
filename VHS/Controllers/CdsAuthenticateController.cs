@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using VHS.Entity.Cds;
 using VHSBackend.Core.Integrations;
 using VHSBackend.Web.Attributes;
-using VHS.Entity.Cds;
 using VHSBackend.Core;
 using VHS.Entity;
 using Newtonsoft.Json;
@@ -15,7 +14,7 @@ using VHSBackend.Core.Repository;
 
 namespace VHSBackend.Web.Controllers
 {
-    [Route("api/cdsauthenticate")]
+    [Route("api/cds")]
     [ApiController]
     public class CdsAuthenticateController : ControllerBase
     {
@@ -45,27 +44,47 @@ namespace VHSBackend.Web.Controllers
         [Route("getVin")]
         public ActionResult<IList<Vehicle>> GetVIN(string regNo, string authToken)
         {
-            var result = _cdsClient.listVins(regNo, authToken);
-
-            foreach (var vehicle in result)
+            if (authToken != null)
             {
-                // OBS! Special case för Kim och Mattias som är delägarna till en bil...
-                // TODO
-                if (vehicle.Vin == "23826029")
+                var result = _cdsClient.listVins(regNo, authToken);
+                if (result != null)
                 {
-                    var rand = new Random();
-                    vehicle.Vin = rand.Next(1000000, 10000000).ToString();
+                    foreach (var vehicle in result)
+                    {
+                        // OBS! Special case för Kim och Mattias som är delägarna till en bil...
+                        // TODO
+                        if (vehicle.Vin == "23826029")
+                        {
+                            var rand = new Random();
+                            vehicle.Vin = rand.Next(1000000, 10000000).ToString();
+                        }
+                        Guid guid = sqlVehicleRepository.CreateVehicle(vehicle);
+                    }
+                    return new OkObjectResult(result);
                 }
-                Guid guid = sqlVehicleRepository.CreateVehicle(vehicle);
-                
-            }
-
-            if (result != null)
-            {
-                return new OkObjectResult(result);
             }
             return new UnauthorizedResult();
         }
 
+        [HttpGet]
+        [Route("updateVinTable")]
+        public ActionResult<IList<Vehicle>> UpdateVinTable(string regNo, string authToken)
+        {
+            if (authToken != null)
+            {
+                var vehicleList = _cdsClient.listVins(regNo, authToken);
+
+                if (vehicleList != null)
+                {
+                    foreach (var vehicle in vehicleList)
+                    {
+                        Guid guid = sqlVehicleRepository.UpdateVinList(vehicle);
+                    }
+                }
+
+                return new OkObjectResult(vehicleList);
+            }
+            return new UnauthorizedResult();
+        }
     }
 }
