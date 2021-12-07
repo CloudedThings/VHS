@@ -16,7 +16,6 @@ namespace VHSBackend.Core.Repository
         }
         private readonly CdsClient _cdsClient;
         
-        Status status = new Status();
 
         public Status GetStatus(string vin)
         {
@@ -36,6 +35,7 @@ namespace VHSBackend.Core.Repository
 
             if (parameters.GetBool("@result"))
             {
+                var status = new Status();
                 status.Vin = parameters.GetString("@vin");
                 status.Lock = parameters.GetBool("@lock");
                 status.Battery = parameters.GetInt("@battery");
@@ -51,107 +51,59 @@ namespace VHSBackend.Core.Repository
             return null;
         }
 
-        public void UpdateSummaryStatusInDB(string vin, bool lockStatus, int battery, double longitude, double latitude, bool alarm, string tirePressure, double milage)
+        public void UpdateSummaryStatusInDB(Status status)
         {
-            GetStatus(vin);
             var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, vin);
-            parameters.AddBoolean("@lock", lockStatus, ParameterDirection.Input);
-            parameters.AddInt("@battery", battery, ParameterDirection.Input);
-            parameters.AddFloat("@gps_longitude", longitude, ParameterDirection.Input);
-            parameters.AddFloat("@gps_latitude", latitude, ParameterDirection.Input);
-            parameters.AddBoolean("@alarm", alarm, ParameterDirection.Input);
-            parameters.AddVarChar("@tirepressure", 50, tirePressure, ParameterDirection.Input);
-            parameters.AddFloat("@milage", milage, ParameterDirection.Input);
+            parameters.AddNVarChar("@vin", 50, status.Vin);
+            parameters.AddBoolean("@lock", status.Lock, ParameterDirection.Input);
+            parameters.AddInt("@battery", status.Battery, ParameterDirection.Input);
+            parameters.AddFloat("@gps_longitude", status.Gps_Longitude, ParameterDirection.Input);
+            parameters.AddFloat("@gps_latitude", status.Gps_Latitude, ParameterDirection.Input);
+            parameters.AddBoolean("@alarm", status.Alarm, ParameterDirection.Input);
+            parameters.AddVarChar("@tirepressure", 50, status.TirePressure, ParameterDirection.Input);
+            parameters.AddFloat("@milage", status.Milage, ParameterDirection.Input);
             DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
         }
 
         public void UpdateAlarmStatusInDB(string vin, bool alarm)
         {
-            GetStatus(vin);
-            var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, vin);
-            parameters.AddBoolean("@lock", status.Lock, ParameterDirection.Input);
-            parameters.AddInt("@battery", status.Battery, ParameterDirection.Input);
-            parameters.AddFloat("@gps_longitude", status.Gps_Longitude, ParameterDirection.Input);
-            parameters.AddFloat("@gps_latitude", status.Gps_Latitude, ParameterDirection.Input);
-            parameters.AddBoolean("@alarm", alarm, ParameterDirection.Input);
-            parameters.AddVarChar("@tirepressure", 50, status.TirePressure, ParameterDirection.Input);
-            parameters.AddFloat("@milage", status.Milage, ParameterDirection.Input);
-            DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
+            var status = GetStatus(vin);
+            status.Alarm = alarm;
+            UpdateSummaryStatusInDB(status);
         }
 
         public void UpdateMilageStatusInDB(string vin, float milage)
         {
-            GetStatus(vin);
-            var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, vin);
-            parameters.AddBoolean("@lock", status.Lock, ParameterDirection.Input);
-            parameters.AddInt("@battery", status.Battery, ParameterDirection.Input);
-            parameters.AddFloat("@gps_longitude", status.Gps_Longitude, ParameterDirection.Input);
-            parameters.AddFloat("@gps_latitude", status.Gps_Latitude, ParameterDirection.Input);
-            parameters.AddBoolean("@alarm", status.Alarm, ParameterDirection.Input);
-            parameters.AddVarChar("@tirepressure", 50, status.TirePressure, ParameterDirection.Input);
-            parameters.AddFloat("@milage", milage, ParameterDirection.Input);
-            DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
+            var status = GetStatus(vin);
+            status.Milage = milage;
+            UpdateSummaryStatusInDB(status);
         }
 
         public void UpdateTirePressureStatusInDB(string vin, string pressure)
         {
-            GetStatus(vin);
-            var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, vin);
-            parameters.AddBoolean("@lock", status.Lock, ParameterDirection.Input);
-            parameters.AddInt("@battery", status.Battery, ParameterDirection.Input);
-            parameters.AddFloat("@gps_longitude", status.Gps_Longitude, ParameterDirection.Input);
-            parameters.AddFloat("@gps_latitude", status.Gps_Latitude, ParameterDirection.Input);
-            parameters.AddBoolean("@alarm", status.Alarm, ParameterDirection.Input);
-            parameters.AddVarChar("@tirepressure", 50, pressure, ParameterDirection.Input);
-            parameters.AddFloat("@milage", status.Milage, ParameterDirection.Input);
-            DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
+            var status = GetStatus(vin);
+            status.TirePressure = pressure;
+            UpdateSummaryStatusInDB(status);
         }
 
         public void UpdateGpsStatusInDB(string vin, double longitude, double latitude)
         {
-            GetStatus(vin);
-            var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, vin);
-            parameters.AddBoolean("@lock", status.Lock, ParameterDirection.Input);
-            parameters.AddInt("@battery", status.Battery, ParameterDirection.Input);
-            parameters.AddFloat("@gps_longitude", longitude, ParameterDirection.Input);
-            parameters.AddFloat("@gps_latitude", latitude, ParameterDirection.Input);
-            parameters.AddBoolean("@alarm", status.Alarm, ParameterDirection.Input);
-            parameters.AddVarChar("@tirepressure", 50, status.TirePressure, ParameterDirection.Input);
-            parameters.AddFloat("@milage", status.Milage, ParameterDirection.Input);
-            DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
+            var status = GetStatus(vin);
+            status.Gps_Latitude = latitude;
+            status.Gps_Longitude = longitude;
+            UpdateSummaryStatusInDB(status);
         }
         public void UpdateLockStatusInDB(string vin, bool lockStatus)
         {
-            GetStatus(vin);
-            var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, vin);
-            parameters.AddBoolean("@lock", lockStatus, ParameterDirection.Input);
-            parameters.AddInt("@battery", status.Battery, ParameterDirection.Input);
-            parameters.AddFloat("@gps_longitude", status.Gps_Longitude, ParameterDirection.Input);
-            parameters.AddFloat("@gps_latitude", status.Gps_Latitude, ParameterDirection.Input);
-            parameters.AddBoolean("@alarm", status.Alarm, ParameterDirection.Input);
-            parameters.AddVarChar("@tirepressure", 50, status.TirePressure, ParameterDirection.Input);
-            parameters.AddFloat("@milage", status.Milage, ParameterDirection.Input);
-            DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
+            var status = GetStatus(vin);
+            status.Lock = lockStatus;
+            UpdateSummaryStatusInDB(status);
         }
         public void UpdateBatteryStatusInDB(string vin, int BatteryLevel)
         {
-            GetStatus(vin);
-            var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, vin);
-            parameters.AddBoolean("@lock", status.Lock, ParameterDirection.Input);
-            parameters.AddInt("@battery", BatteryLevel, ParameterDirection.Input);
-            parameters.AddFloat("@gps_longitude", status.Gps_Longitude, ParameterDirection.Input);
-            parameters.AddFloat("@gps_latitude", status.Gps_Latitude, ParameterDirection.Input);
-            parameters.AddBoolean("@alarm", status.Alarm, ParameterDirection.Input);
-            parameters.AddVarChar("@tirepressure", 50, status.TirePressure, ParameterDirection.Input);
-            parameters.AddFloat("@milage", status.Milage, ParameterDirection.Input);
-            DbAccess.ExecuteNonQuery("dbo.sStatusUpdate", ref parameters, CommandType.StoredProcedure);
+            var status = GetStatus(vin);
+            status.Battery = BatteryLevel;
+            UpdateSummaryStatusInDB(status);
         }
         public string SearchVehicle(string vin)
         {

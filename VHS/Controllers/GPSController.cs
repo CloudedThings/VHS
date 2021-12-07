@@ -67,5 +67,17 @@ namespace VHSBackend.Web.Controllers
             return new NotFoundObjectResult("Nothing to return");
         }
 
+        [HttpPatch]
+        [Route("{vin}/destination")]
+        public ActionResult<bool> UpdateDestinationInDB(string vin, double latitude, double longitude)
+        {
+            if (vin != null)
+            {
+                _sqlStatusRepository.updateDestinationInRouteTable(vin, longitude, latitude);
+                return new OkObjectResult("Updated!");
+            }
+            return new BadRequestObjectResult("Wrong input");
+        }
+
     }
 }

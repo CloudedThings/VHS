@@ -27,17 +27,14 @@ namespace VHSBackend.Web.Controllers
 
         [HttpPost]
         [Route("{vin}/status/summary")]
-        public ActionResult<bool> UpdateStatus(string vin, bool lockStatus, 
-            int battery, double longitude, double latitude, bool alarm, string tirePressure,
-            double milage, string authToken)
+        public ActionResult<bool> UpdateStatusSummary(string vin, Status status, string authToken)
         {
             // No status change can be done on cars without owner
             if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
             {
-                _vehicleRepository.UpdateSummaryStatusInDB(vin, lockStatus, battery, longitude, latitude, alarm, tirePressure, milage);
+                _vehicleRepository.UpdateSummaryStatusInDB(status);
                 return new OkObjectResult($"Status summary changed");
             }
-
             return new NotFoundObjectResult("Vehicle has no owner - summary status cannot be changed!");
         }
 
@@ -76,7 +73,7 @@ namespace VHSBackend.Web.Controllers
             if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
             {
                 _vehicleRepository.UpdateAlarmStatusInDB(vin, alarm);
-                return new OkObjectResult($"Battery status changed");
+                return new OkObjectResult($"Alarm status changed");
             }
 
             return new NotFoundObjectResult("Vehicle has no owner - Battery status cannot be changed!");
@@ -89,7 +86,7 @@ namespace VHSBackend.Web.Controllers
             if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
             {
                 _vehicleRepository.UpdateTirePressureStatusInDB(vin, pressure);
-                return new OkObjectResult($"Battery status changed");
+                return new OkObjectResult($"Tire pressuer status changed");
             }
 
             return new NotFoundObjectResult("Vehicle has no owner - Battery status cannot be changed!");
@@ -102,7 +99,7 @@ namespace VHSBackend.Web.Controllers
             if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
             {
                 _vehicleRepository.UpdateMilageStatusInDB(vin, milage);
-                return new OkObjectResult($"Battery status changed");
+                return new OkObjectResult($"Milage status changed");
             }
 
             return new NotFoundObjectResult("Vehicle has no owner - Battery status cannot be changed!");
@@ -112,7 +109,7 @@ namespace VHSBackend.Web.Controllers
         [Route("{vin}/status/gps")]
         public ActionResult<bool> UpdateGpsStatus(string vin, double longitude, double latitude, string authToken)
         {
-            // No status change can be done on cars without owner
+            
             if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
             {
                 _vehicleRepository.UpdateGpsStatusInDB(vin, longitude, latitude);

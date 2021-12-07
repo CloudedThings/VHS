@@ -55,14 +55,17 @@ namespace VHSBackend.Core.Repository
             parameters.AddDateTime("@timestamp", DateTime.Now, ParameterDirection.Input);
 
             DbAccess.ExecuteNonQuery("dbo.sAddDestination", ref parameters, CommandType.StoredProcedure);
-
-            
         }
 
         // update destination
-        public void updateDestinationInRouteTable(double longitude, double latitude)
+        public void updateDestinationInRouteTable(string vin, double longitude, double latitude)
         {
-            throw new NotImplementedException();
+            var parameters = new SqlParameters();
+            parameters.AddNVarChar("@vin", 50, vin);
+            parameters.AddFloat("@latitude", latitude, ParameterDirection.Input);
+            parameters.AddFloat("@longitude", longitude, ParameterDirection.Input);
+
+            DbAccess.ExecuteNonQuery("dbo.sUpdateDestination", ref parameters, CommandType.StoredProcedure);
         }
     }
 }
