@@ -50,8 +50,18 @@ namespace VHSBackend.Web.Controllers
         {
 
             IList<DriveLogData> tripLogs = _sqlDrivingRecordsRepository.GetTripLogs(vin, journal_id);
+            var startMilage = tripLogs.First().CurrentMilage;
+            var endMilage = tripLogs.Last().CurrentMilage;
+            var startBatteryLevel = tripLogs.First().BatteryLevel;
+            var endBatteryLevel = tripLogs.Last().BatteryLevel;
+            DateTime startTime = tripLogs.First().CreatedAt;
+            DateTime endTime = tripLogs.Last().CreatedAt;
+            System.TimeSpan tripTime = endTime.Subtract(startTime);
 
-            return new OkObjectResult(tripLogs);
+
+            _sqlDrivingRecordsRepository.DrivingTripCalculations(startMilage, endMilage, startBatteryLevel, endBatteryLevel, tripTime.Minutes);
+
+            return new OkObjectResult(tripTime);
         }
     }
 }

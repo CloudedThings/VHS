@@ -65,5 +65,12 @@ namespace VHSBackend.Core.Repository
             DbAccess.DisposeReader(ref dr);
             return result;
         }
+
+        public void DrivingTripCalculations(int startMilage, int endMilage, int startBatteryLevel,  int endBatteryLevel, int tripTime)
+        {
+            var totalTrip = endMilage - startMilage;
+            var totalBatteryUsed = endBatteryLevel - startBatteryLevel;
+
+        }
     }
 }
