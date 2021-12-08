@@ -20,34 +20,38 @@ namespace VHSBackend.Web.Controllers
 
         private readonly SqlDrivingRecordsRepository _sqlDrivingRecordsRepository;
         
+        
         // starta körningen 
         [HttpPost]
         [Route("{vin}/startTrip")]
-        public ActionResult<bool> StartJournal(string vin, DrivingJournal journal)
+        public ActionResult<Guid> StartJournal(string vin)
         {
-            // var journal_id = startDrivingJournal(vin) -> returnerar journal_id
             Guid journal_id = _sqlDrivingRecordsRepository.StartDrivingJournal(vin);
-            // return journal_id och posta den först loggen med starttid
-            // sendDrivingLogs(vin, journal_id) -> den första loggen i DrivingLogs
-
+            // return journal_id och posta den första loggen med starttid
+            
+            
             return new OkObjectResult(journal_id);
         }
 
         // under resans gång
         [HttpPost]
-        [Route("{vin}/triplogs")]
-        public ActionResult<bool> sendRegularLogsUnderTrip(string vin)
+        [Route("{vin}/{journal_id}/triplogs")]
+        public ActionResult<bool> sendRegularLogsUnderTrip(string vin, Guid journal_id, DriveLogData logData)
         {
+            _sqlDrivingRecordsRepository.sendDrivingLogs(vin, journal_id, logData);
             //sendDrivingLogs(vin)
-            return new BadRequestResult();
+            return new OkObjectResult(true);
         }
 
         // avsluta 
         [HttpPost]
-        [Route("{vin}/savetrip")]
-        public ActionResult<bool>  SaveTrip(string vin)
+        [Route("{vin}/{journal_id}/savetrip")]
+        public ActionResult<IList<DriveLogData>>  SaveTrip(string vin, Guid journal_id)
         {
-            return new BadRequestResult();
+
+            IList<DriveLogData> tripLogs = _sqlDrivingRecordsRepository.GetTripLogs(vin, journal_id);
+
+            return new OkObjectResult(tripLogs);
         }
     }
 }

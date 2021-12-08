@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using VHS.Entity;
 
 namespace VHSBackend.Core.Repository
 {
@@ -25,6 +26,44 @@ namespace VHSBackend.Core.Repository
 
             DbAccess.ExecuteNonQuery("dbo.sStartDrivingJournal", ref parameters, CommandType.StoredProcedure);
             return journal_id;
+        }
+
+        public void sendDrivingLogs(string vin, Guid journal_id, DriveLogData logData)
+        {
+            var parameters = new SqlParameters();
+            parameters.AddNVarChar("@vin", vin, 50, ParameterDirection.Input);
+            parameters.AddUniqueIdentifier("@journal_id", journal_id, ParameterDirection.Input);
+            parameters.AddFloat("@longitude", logData.Longitude, ParameterDirection.Input);
+            parameters.AddFloat("@latitude", logData.Latitude, ParameterDirection.Input);
+            parameters.AddInt("@battery_level", logData.BatteryLevel, ParameterDirection.Input);
+            parameters.AddInt("@current_milage", logData.CurrentMilage, ParameterDirection.Input);
+            parameters.AddDateTime("@created_at", DateTime.Now, ParameterDirection.Input);
+
+            DbAccess.ExecuteNonQuery("dbo.sSendDrivingLogs", ref parameters, CommandType.StoredProcedure);
+        }
+
+        public IList<DriveLogData> GetTripLogs(string vin, Guid journal_id)
+        {
+
+            var result = new List<DriveLogData>();
+            var parameters = new SqlParameters();
+            parameters.AddNVarChar("@vin", vin, 50, ParameterDirection.Input);
+            parameters.AddUniqueIdentifier("@journal_id", journal_id, ParameterDirection.Input);
+
+            var dr = DbAccess.ExecuteReader("dbo.sGetTripLogs", ref parameters, CommandType.StoredProcedure);
+            while (dr.Read())
+            {
+                var l = new DriveLogData();
+                l.Longitude = dr.GetDouble(1);
+                l.Latitude = dr.GetDouble(2);
+                l.BatteryLevel = dr.GetInt32(3);
+                l.CurrentMilage = dr.GetInt32(4);
+                l.CreatedAt = dr.GetDateTime(5);
+                result.Add(l);
+            }
+
+            DbAccess.DisposeReader(ref dr);
+            return result;
         }
     }
 }
