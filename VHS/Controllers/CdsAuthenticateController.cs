@@ -40,31 +40,31 @@ namespace VHSBackend.Web.Controllers
 
         }
 
-        [HttpGet]
-        [Route("getVin")]
-        public ActionResult<IList<Vehicle>> GetVIN(string regNo, string authToken)
-        {
-            if (authToken != null)
-            {
-                var result = _cdsClient.listVins(regNo, authToken);
-                if (result != null)
-                {
-                    foreach (var vehicle in result)
-                    {
-                        // OBS! Special case för Kim och Mattias som är delägarna till en bil...
-                        // TODO
-                        if (vehicle.Vin == "23826029")
-                        {
-                            var rand = new Random();
-                            vehicle.Vin = rand.Next(1000000, 10000000).ToString();
-                        }
-                        Guid guid = sqlVehicleRepository.CreateVehicle(vehicle);
-                    }
-                    return new OkObjectResult(result);
-                }
-            }
-            return new UnauthorizedResult();
-        }
+        //[HttpGet]
+        //[Route("getVin")]
+        //public ActionResult<IList<Vehicle>> GetVIN(string regNo, string authToken)
+        //{
+        //    if (authToken != null)
+        //    {
+        //        var result = _cdsClient.listVins(regNo, authToken);
+        //        if (result != null)
+        //        {
+        //            foreach (var vehicle in result)
+        //            {
+        //                // OBS! Special case för Kim och Mattias som är delägarna till en bil...
+        //                // TODO
+        //                if (vehicle.Vin == "23826029")
+        //                {
+        //                    var rand = new Random();
+        //                    vehicle.Vin = rand.Next(1000000, 10000000).ToString();
+        //                }
+        //                Guid guid = sqlVehicleRepository.CreateVehicle(vehicle);
+        //            }
+        //            return new OkObjectResult(result);
+        //        }
+        //    }
+        //    return new UnauthorizedResult();
+        //}
 
         [HttpGet]
         [Route("updateVinTable")]

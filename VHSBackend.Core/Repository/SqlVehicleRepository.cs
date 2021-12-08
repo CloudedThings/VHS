@@ -51,10 +51,10 @@ namespace VHSBackend.Core.Repository
             return null;
         }
 
-        public void UpdateSummaryStatusInDB(Status status)
+        public void UpdateSummaryStatusInDB(Status status, string vin)
         {
             var parameters = new SqlParameters();
-            parameters.AddNVarChar("@vin", 50, status.Vin);
+            parameters.AddNVarChar("@vin", 50, vin);
             parameters.AddBoolean("@lock", status.Lock, ParameterDirection.Input);
             parameters.AddInt("@battery", status.Battery, ParameterDirection.Input);
             parameters.AddFloat("@gps_longitude", status.Gps_Longitude, ParameterDirection.Input);
@@ -69,21 +69,21 @@ namespace VHSBackend.Core.Repository
         {
             var status = GetStatus(vin);
             status.Alarm = alarm;
-            UpdateSummaryStatusInDB(status);
+            UpdateSummaryStatusInDB(status, vin);
         }
 
         public void UpdateMilageStatusInDB(string vin, float milage)
         {
             var status = GetStatus(vin);
             status.Milage = milage;
-            UpdateSummaryStatusInDB(status);
+            UpdateSummaryStatusInDB(status, vin);
         }
 
         public void UpdateTirePressureStatusInDB(string vin, string pressure)
         {
             var status = GetStatus(vin);
             status.TirePressure = pressure;
-            UpdateSummaryStatusInDB(status);
+            UpdateSummaryStatusInDB(status, vin);
         }
 
         public void UpdateGpsStatusInDB(string vin, double longitude, double latitude)
@@ -91,19 +91,19 @@ namespace VHSBackend.Core.Repository
             var status = GetStatus(vin);
             status.Gps_Latitude = latitude;
             status.Gps_Longitude = longitude;
-            UpdateSummaryStatusInDB(status);
+            UpdateSummaryStatusInDB(status, vin);
         }
         public void UpdateLockStatusInDB(string vin, bool lockStatus)
         {
             var status = GetStatus(vin);
             status.Lock = lockStatus;
-            UpdateSummaryStatusInDB(status);
+            UpdateSummaryStatusInDB(status, vin);
         }
         public void UpdateBatteryStatusInDB(string vin, int BatteryLevel)
         {
             var status = GetStatus(vin);
             status.Battery = BatteryLevel;
-            UpdateSummaryStatusInDB(status);
+            UpdateSummaryStatusInDB(status, vin);
         }
         public string SearchVehicle(string vin)
         {
@@ -149,14 +149,14 @@ namespace VHSBackend.Core.Repository
             
             parameters.AddNVarChar("@vin", 50, vehicle.Vin);
                        
-            if (vehicle.owner != null && !string.IsNullOrEmpty(vehicle.owner.Id))
+            if (vehicle.owner != null && vehicle.owner.Id != Guid.Empty)
             {
-                parameters.AddNVarChar("@id", vehicle.owner.Id, 50, ParameterDirection.Input);
+                parameters.AddUniqueIdentifier("@id", vehicle.owner.Id, ParameterDirection.Input);
                 parameters.AddNVarChar("@displayName", vehicle.owner.FirstName, 50, ParameterDirection.Input);
             }
             else
             {
-                parameters.AddNVarChar("@id", null, 50, ParameterDirection.Input);
+                parameters.AddUniqueIdentifier("@id", Guid.Empty, ParameterDirection.Input);
                 parameters.AddNVarChar("@displayName", null, 50, ParameterDirection.Input);
             }
             parameters.AddNVarChar("@regNo", 50, vehicle.Regno);
@@ -169,14 +169,14 @@ namespace VHSBackend.Core.Repository
         {
             var parameters = new SqlParameters();
             parameters.AddNVarChar("@vin", 50, vehicle.Vin);
-            if (vehicle.owner != null && !string.IsNullOrEmpty(vehicle.owner.Id))
+            if (vehicle.owner != null && vehicle.owner.Id != Guid.Empty)
             {
-                parameters.AddNVarChar("@id", vehicle.owner.Id, 50, ParameterDirection.Input);
+                parameters.AddUniqueIdentifier("@id", vehicle.owner.Id, ParameterDirection.Input);
                 parameters.AddNVarChar("@displayName", vehicle.owner.FirstName, 50, ParameterDirection.Input);
             }
             else
             {
-                parameters.AddNVarChar("@id", null, 50, ParameterDirection.Input);
+                parameters.AddUniqueIdentifier("@id", Guid.Empty,  ParameterDirection.Input);
                 parameters.AddNVarChar("@displayName", null, 50, ParameterDirection.Input);
             }
             parameters.AddNVarChar("@regNo", 50, vehicle.Regno);

@@ -29,7 +29,7 @@ namespace VHSBackend.Web.Controllers
         // Post endpoint for user/app where commands will be send
         [HttpPost]
         [Route("{vin}")]
-        public ActionResult<string> SendCommand(string vin, string userName, string password, Command command, string action, string authToken)
+        public ActionResult<string> SendCommand(string vin, string userName, string password, Command command, string authToken)
         {
             if (_cDSUserRepository.ValidateUsersCarOwnershipInCDS(userName, password, vin, authToken))
             {
@@ -37,29 +37,11 @@ namespace VHSBackend.Web.Controllers
                 // Vi behöver en metod, stored procedure för det och en tabell
                 // vi kör antingen if satser eller switch baserad på "action" string
 
-                _sqlCommandRepository.UpdateSpecificActionCommandInDB(vin, command, action);
+                _sqlCommandRepository.UpdateCommandInDB(vin, command);
 
                 return new OkObjectResult("Yes you own a car");
             }
             return new BadRequestObjectResult("This user does not own a car");
-
-            //var result = _cdsClient.Login(userName, password);
-
-            //if (result != null)
-            //{
-            //    Guid id = result.Id;
-            //    var response = _cdsClient.ValidateToken(id, result.AccessToken);
-            //    if (_sqlVehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
-            //    {
-            //        // Här ska vi skicka tutta och blinka till DB
-            //        // Vi behöver en metod, stored procedure för det och en tabell
-            //        // vi kör antingen if satser eller switch baserad på "action" string
-            //        return new OkObjectResult("Yes you own a car");
-            //    }
-            //    return new BadRequestObjectResult("This user does not own a car");
-
-            //}
-            //return new UnauthorizedObjectResult("Unauthorized validation in CDS");
         }
 
         // Get endpoint for car
@@ -69,20 +51,20 @@ namespace VHSBackend.Web.Controllers
         {
 
             // här behöver vi en metod där bilen hämtar commando
+            var response = _sqlCommandRepository.GetCommand(vin);
 
-
-            return new OkObjectResult("OK");
+            return new OkObjectResult(response);
         }
         // Post endpoint for car to confirm actions execution
         [HttpPost]
         [Route("{vin}/reset")]
-        public ActionResult<string> ResetCommand(string vin, string action, bool value)
+        public ActionResult<string> ResetCommand(string vin, bool value)
         {
-
             // metod som resetar alla kommando till 0
+            _sqlCommandRepository.ResetCommandInDB(vin);
+            
 
-
-            return new OkObjectResult("OK");
+            return new OkObjectResult("Reseted to default");
         }
     }
 }

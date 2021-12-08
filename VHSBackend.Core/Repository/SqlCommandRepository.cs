@@ -61,12 +61,23 @@ namespace VHSBackend.Core.Repository
             
         }
 
-        public bool UpdateSpecificActionCommandInDB(string vin, Command command, string action)
+        public void ResetCommandInDB(string vin)
+        {
+            var currentCommand = GetCommand(vin);
+            currentCommand.Lights = false;
+            currentCommand.Honk = false;
+            currentCommand.Door = false;
+            currentCommand.Heat = false;
+            currentCommand.AC = false;
+            currentCommand.Trunk = false;
+            currentCommand.GetDest = false;
+            UpdateCommands(currentCommand, vin);
+        }
+
+        public bool UpdateCommandInDB(string vin, Command command)
         {
             // here Send specific action and change value for that action?
             var currentCommand = GetCommand(vin);
-            // TODO
-            //command.${action} = 1 || 0;
 
             if(UpdateCommands(command, vin))
             {

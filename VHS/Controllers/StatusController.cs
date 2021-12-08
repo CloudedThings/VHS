@@ -32,7 +32,7 @@ namespace VHSBackend.Web.Controllers
             // No status change can be done on cars without owner
             if (_vehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
             {
-                _vehicleRepository.UpdateSummaryStatusInDB(status);
+                _vehicleRepository.UpdateSummaryStatusInDB(status, vin);
                 return new OkObjectResult($"Status summary changed");
             }
             return new NotFoundObjectResult("Vehicle has no owner - summary status cannot be changed!");

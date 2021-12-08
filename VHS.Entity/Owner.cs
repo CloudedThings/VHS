@@ -6,7 +6,7 @@ namespace VHS.Entity
 {
     public class Owner
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; } = Guid.Empty;
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string City { get; set; }
