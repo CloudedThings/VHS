@@ -16,21 +16,26 @@ namespace VHSBackend.Web.Controllers
         public DrivingRecordsController()
         {
             _sqlDrivingRecordsRepository = new SqlDrivingRecordsRepository();
+            _sqlVehicleRepository = new SqlVehicleRepository();
         }
 
         private readonly SqlDrivingRecordsRepository _sqlDrivingRecordsRepository;
+        private readonly SqlVehicleRepository _sqlVehicleRepository;
         
         
         // starta körningen 
         [HttpPost]
         [Route("{vin}/startTrip")]
-        public ActionResult<Guid> StartJournal(string vin)
+        public ActionResult<Guid> StartJournal(string vin, string authToken)
         {
-            Guid journal_id = _sqlDrivingRecordsRepository.StartDrivingJournal(vin);
+            
             // return journal_id och posta den första loggen med starttid
-            
-            
-            return new OkObjectResult(journal_id);
+            if (_sqlVehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
+            {
+                Guid journal_id = _sqlDrivingRecordsRepository.StartDrivingJournal(vin);
+                return new OkObjectResult(journal_id);
+            }
+            return new NotFoundObjectResult("Car without owner cannot send logs");
         }
 
         // under resans gång
@@ -39,7 +44,7 @@ namespace VHSBackend.Web.Controllers
         public ActionResult<bool> sendRegularLogsUnderTrip(string vin, Guid journal_id, DriveLogData logData)
         {
             _sqlDrivingRecordsRepository.sendDrivingLogs(vin, journal_id, logData);
-            //sendDrivingLogs(vin)
+
             return new OkObjectResult(true);
         }
 
@@ -50,18 +55,9 @@ namespace VHSBackend.Web.Controllers
         {
 
             IList<DriveLogData> tripLogs = _sqlDrivingRecordsRepository.GetTripLogs(vin, journal_id);
-            var startMilage = tripLogs.First().CurrentMilage;
-            var endMilage = tripLogs.Last().CurrentMilage;
-            var startBatteryLevel = tripLogs.First().BatteryLevel;
-            var endBatteryLevel = tripLogs.Last().BatteryLevel;
-            DateTime startTime = tripLogs.First().CreatedAt;
-            DateTime endTime = tripLogs.Last().CreatedAt;
-            System.TimeSpan tripTime = endTime.Subtract(startTime);
+            
 
-
-            _sqlDrivingRecordsRepository.DrivingTripCalculations(startMilage, endMilage, startBatteryLevel, endBatteryLevel, tripTime.Minutes);
-
-            return new OkObjectResult(tripTime);
+            return new OkObjectResult(tripLogs);
         }
     }
 }

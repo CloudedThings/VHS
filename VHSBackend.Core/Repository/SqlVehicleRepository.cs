@@ -125,7 +125,6 @@ namespace VHSBackend.Core.Repository
         }
         public bool CheckIfCarHasAnOwnerInCDS(string vin, string authToken)
         {
-            var ownerStatus = 0;
             var regNo = SearchVehicle(vin);
             if (regNo.ToLower().Equals("invalid vin input"))
             {
@@ -135,11 +134,9 @@ namespace VHSBackend.Core.Repository
             var responseFromCDS = _cdsClient.ownerData(regNo, vin, authToken);
             if (responseFromCDS.owner == null)
             {
-                ownerStatus = 0;
                 return false;
             } else
             {
-                ownerStatus = 1;
                 return true;
             }
         }
@@ -185,10 +182,27 @@ namespace VHSBackend.Core.Repository
 
             return new Guid();
         }
-        public string GetNewRoutesDestination(string vin)
+        public Destination GetNewRoutesDestination(string vin)
         {
+            Destination destination = new Destination();
             // Get the two floats/doubles from Route Table and return destination as string
-            throw new NotImplementedException();
+            var parameters = new SqlParameters();
+            parameters.AddNVarChar("@vin", 50, vin);
+            parameters.AddBoolean("@result", false, ParameterDirection.Output);
+            parameters.AddFloat("@latitude", 0, ParameterDirection.Output);
+            parameters.AddFloat("@longitude", 0, ParameterDirection.Output);
+            parameters.AddDateTime("@timestamp", DateTime.Now, ParameterDirection.Output);
+
+            DbAccess.ExecuteNonQuery("dbo.sGetDestination", ref parameters, CommandType.StoredProcedure);
+
+            if (parameters.GetBool("@result"))
+            {
+                destination.Latitude = parameters.GetDouble("@latitude");
+                destination.Longitude = parameters.GetDouble("@longitude");
+                destination.Timestamp = parameters.GetDateTime("@timestamp");
+            }
+
+            return destination;
         }
     }
 }
