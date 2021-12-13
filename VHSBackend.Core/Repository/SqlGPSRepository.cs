@@ -8,9 +8,24 @@ using VHS.Entity;
 
 namespace VHSBackend.Core.Repository
 {
-    public class SqlStatusRepository : ADbRepositoryBase
+    public class SqlGPSRepository : ADbRepositoryBase
     {
         Status status = new Status();
+
+        public bool DeleteDestinationFromDB(string vin)
+        {
+            var parameters = new SqlParameters();
+
+            parameters.AddNVarChar("@vin", 50, vin);
+            //parameters.AddFloat("@latitude", 0, System.Data.ParameterDirection.Input);
+            //parameters.AddFloat("@longitude", 0, System.Data.ParameterDirection.Input);
+            //parameters.
+
+            DbAccess.ExecuteNonQuery("dbo.sDeleteDestination", ref parameters, System.Data.CommandType.StoredProcedure);
+
+            return true;
+        }
+
         public double getLatitudeFromDB(string vin)
         {
             var parameters = new SqlParameters();

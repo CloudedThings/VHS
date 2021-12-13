@@ -61,6 +61,24 @@ namespace VHSBackend.Core.Repository
             
         }
 
+        public bool VehicleBarkCommandInDB(string vin, float latitute, float longitude)
+        {
+            var parameters = new SqlParameters();
+            parameters.AddNVarChar("@Vin", 50, vin);
+            parameters.AddFloat("@Latitude", latitute, ParameterDirection.Input);
+            parameters.AddFloat("@Longitude", longitude, ParameterDirection.Input);
+            parameters.AddFloat("@Radius", 200, ParameterDirection.Input);
+            parameters.AddBoolean("@Result", false, ParameterDirection.Output);
+
+            DbAccess.ExecuteNonQuery("dbo.sVehicleHonk", ref parameters, CommandType.StoredProcedure);
+
+            if(parameters.GetBool("@Result"))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public void ResetCommandInDB(string vin)
         {
             var currentCommand = GetCommand(vin);

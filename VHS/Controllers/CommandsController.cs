@@ -58,13 +58,25 @@ namespace VHSBackend.Web.Controllers
         // Post endpoint for car to confirm actions execution
         [HttpPost]
         [Route("{vin}/reset")]
-        public ActionResult<string> ResetCommand(string vin, bool value)
+        public ActionResult<string> ResetCommand(string vin)
         {
             // metod som resetar alla kommando till 0
             _sqlCommandRepository.ResetCommandInDB(vin);
             
 
             return new OkObjectResult("Reseted to default");
+        }
+
+        [HttpPost]
+        [Route("{vin}/findVehicleByBarking")]
+        public ActionResult<bool> VehicleBark(string vin, float Latitute, float Longitude)
+        {
+            if(_sqlCommandRepository.VehicleBarkCommandInDB(vin, Latitute, Longitude))
+            {
+                return new OkObjectResult("Go and listen for your car barking!");
+            }
+            return new NotFoundObjectResult("Action not allowed becuse your not in radius");
+            
         }
     }
 }
