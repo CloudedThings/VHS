@@ -75,4 +75,6 @@ november-december-2021
 
 ### Acknowledgements
 * [Kalle Johansson](https://github.com/MeltyMan)
+* [Zacharias Göransson](https://github.com/ZacheZache)
+* [David Karnel](https://github.com/Karnelius)
 
