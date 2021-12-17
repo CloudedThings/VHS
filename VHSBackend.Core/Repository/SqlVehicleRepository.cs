@@ -131,6 +131,7 @@ namespace VHSBackend.Core.Repository
                 return false;
             }
 
+            // add unique owner id to verify right owner of the searched car
             var responseFromCDS = _cdsClient.ownerData(regNo, vin, authToken);
             if (responseFromCDS.owner == null)
             {

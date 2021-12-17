@@ -24,6 +24,8 @@ namespace VHSBackend.Core.Repository
             {
                 Guid id = result.Id;
                 var response = _cdsClient.ValidateToken(id, result.AccessToken);
+                // CheckIfCarHasAnOwnerInCDS bör har en parameter till: vehicle owner uniqueid för att kolla om det är rätt
+                // person som skickar commando
                 if (_sqlVehicleRepository.CheckIfCarHasAnOwnerInCDS(vin, authToken))
                 {
                     return true;
