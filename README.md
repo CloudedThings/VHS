@@ -33,7 +33,7 @@ Customers requirement is a holistic solution for a "CloudCar" concept where car 
   * Energy usage
   * Average speed
 * **Status** - car should be able to regularly send it's current data such as:
-  * battery level
+  * Battery level
   * Position
   * Door status
 
