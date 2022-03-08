@@ -59,6 +59,8 @@ Customer provided a *Customer Data System* against which our backend solution co
 <a href="img/">
     <img src="img/vhs_swagger.jpg" alt="VHS" width="480" height="504">
   </a>
+  
+  -
 
 ---
 
